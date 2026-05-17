@@ -19,6 +19,8 @@ export default function ArticlesTable() {
         .from("articles")
         .insert({
           title: "New Draft Article",
+          slug: `draft-${Date.now()}`,
+          content: "<p>Start writing here...</p>",
           status: "draft",
           author_id: session.user.id,
         })

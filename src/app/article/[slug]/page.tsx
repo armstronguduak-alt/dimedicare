@@ -52,14 +52,18 @@ export default async function ArticlePage({ params }: { params: { slug: string }
   }
 
   // Fetch related articles on the server
-  const { data: relatedArticles } = await supabase
-    .from("articles")
-    .select(`id, title, slug, excerpt, featured_image, read_time, categories (name)`)
-    .eq("status", "published")
-    .eq("category_id", article.category_id)
-    .neq("id", article.id)
-    .order("published_at", { ascending: false })
-    .limit(3);
+  let relatedArticles: any[] = [];
+  if (article.category_id) {
+    const { data } = await supabase
+      .from("articles")
+      .select(`id, title, slug, excerpt, featured_image, read_time, categories (name)`)
+      .eq("status", "published")
+      .eq("category_id", article.category_id)
+      .neq("id", article.id)
+      .order("published_at", { ascending: false })
+      .limit(3);
+    relatedArticles = data || [];
+  }
 
   return (
     <ArticleClient 
