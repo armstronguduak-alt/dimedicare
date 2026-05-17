@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import { Tag } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
@@ -16,7 +16,7 @@ const RelatedTags = ({ tags }: RelatedTagsProps) => {
         Tags:
       </span>
       {tags.map((tag) => (
-        <Link key={tag.id} to={`/search?tag=${tag.slug}`}>
+        <Link key={tag.id} href={`/search?tag=${tag.slug}`}>
           <Badge
             variant="outline"
             className="cursor-pointer transition-colors hover:bg-primary hover:text-primary-foreground"

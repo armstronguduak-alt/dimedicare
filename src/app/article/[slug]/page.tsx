@@ -11,9 +11,14 @@ export async function generateStaticParams() {
   const { data: articles } = await supabase
     .from("articles")
     .select("slug")
-    .eq("status", "published");
+    .eq("status", "published")
+    .order("published_at", { ascending: false })
+    .limit(30);
   
-  return (articles || []).map((article) => ({
+  // Filter out extremely long slugs that crash the file system on Windows limits
+  const validArticles = (articles || []).filter(a => a.slug && a.slug.length < 150);
+
+  return validArticles.map((article) => ({
     slug: article.slug,
   }));
 }

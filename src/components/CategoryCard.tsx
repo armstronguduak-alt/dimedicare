@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import { LucideIcon, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -11,7 +11,7 @@ interface CategoryCardProps {
 
 const CategoryCard = ({ title, description, icon: Icon, link }: CategoryCardProps) => {
   return (
-    <Link to={link}>
+    <Link href={link}>
       <motion.div
         whileHover={{ y: -6, scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
