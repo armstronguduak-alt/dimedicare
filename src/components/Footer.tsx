@@ -1,13 +1,13 @@
-import { Link } from "react-router-dom";
+"use client";
+
+import Link from "next/link";
 import { Facebook, Twitter, Instagram, Youtube, ArrowUpRight, Heart } from "lucide-react";
 import { motion } from "framer-motion";
 import { fadeInUp, staggerContainer, staggerItem, scrollViewport } from "@/lib/animations";
+import Image from "next/image";
 import logo from "@/assets/logo.png";
-import { useCategories } from "@/hooks/use-data";
 
-const Footer = () => {
-  const { data: categories = [] } = useCategories();
-
+export default function Footer({ categories = [] }: { categories?: any[] }) {
   const companyLinks = [
     { name: "About Us", path: "/about" },
     { name: "Contact", path: "/contact" },
@@ -32,10 +32,9 @@ const Footer = () => {
     >
       <div className="container mx-auto px-4 py-12 md:py-16">
         <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-4">
-          {/* Brand */}
           <motion.div variants={staggerItem} className="space-y-4 lg:col-span-1">
-            <Link to="/" className="inline-block">
-              <img src={logo} alt="Dimedicare" className="h-8 w-auto" />
+            <Link href="/" className="inline-block relative h-8 w-28">
+              <Image src={logo} alt="Dimedicare" fill className="object-contain object-left" />
             </Link>
             <p className="text-xs text-muted-foreground leading-relaxed max-w-xs">
               Your trusted source for functional health, fitness guidance, and holistic wellness.
@@ -56,14 +55,13 @@ const Footer = () => {
             </div>
           </motion.div>
 
-          {/* Quick Links (Dynamic Categories) */}
           <motion.div variants={staggerItem}>
             <h3 className="mb-4 font-serif text-sm font-bold text-foreground">Categories</h3>
             <ul className="space-y-2.5">
               {categories.slice(0, 5).map((category) => (
                 <li key={category.id}>
                   <Link
-                    to={`/category/${category.slug}`}
+                    href={`/category/${category.slug}`}
                     className="group inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-primary transition-colors"
                   >
                     {category.name}
@@ -74,14 +72,13 @@ const Footer = () => {
             </ul>
           </motion.div>
 
-          {/* Company */}
           <motion.div variants={staggerItem}>
             <h3 className="mb-4 font-serif text-sm font-bold text-foreground">Company</h3>
             <ul className="space-y-2.5">
               {companyLinks.map((link) => (
                 <li key={link.path}>
                   <Link
-                    to={link.path}
+                    href={link.path}
                     className="group inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-primary transition-colors"
                   >
                     {link.name}
@@ -92,13 +89,12 @@ const Footer = () => {
             </ul>
           </motion.div>
 
-          {/* Newsletter CTA */}
           <motion.div variants={staggerItem}>
             <h3 className="mb-4 font-serif text-sm font-bold text-foreground">Stay Updated</h3>
             <p className="mb-4 text-xs text-muted-foreground leading-relaxed">
               Subscribe to our newsletter for weekly health tips and wellness insights.
             </p>
-            <Link to="/newsletter">
+            <Link href="/newsletter">
               <motion.span
                 whileHover={{ scale: 1.03, y: -1 }}
                 whileTap={{ scale: 0.97 }}
@@ -111,7 +107,6 @@ const Footer = () => {
           </motion.div>
         </div>
 
-        {/* Bottom Bar */}
         <motion.div
           variants={fadeInUp}
           className="mt-12 border-t border-border/50 pt-6 flex flex-col md:flex-row items-center justify-between gap-4"
@@ -126,6 +121,4 @@ const Footer = () => {
       </div>
     </motion.footer>
   );
-};
-
-export default Footer;
+}

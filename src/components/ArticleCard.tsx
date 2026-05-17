@@ -1,7 +1,8 @@
-import { Link } from "react-router-dom";
-import { Clock, ArrowUpRight } from "lucide-react";
+"use client";
+
+import Link from "next/link";
+import { ArrowUpRight } from "lucide-react";
 import { motion } from "framer-motion";
-import { cardHover, imageZoom } from "@/lib/animations";
 
 interface ArticleCardProps {
   title: string;
@@ -9,61 +10,48 @@ interface ArticleCardProps {
   category: string;
   readTime: string;
   image: string;
-  slug: string;
+  slug?: string;
 }
 
-const ArticleCard = ({ title, excerpt, category, readTime, image, slug }: ArticleCardProps) => {
+const ArticleCard = ({ title, excerpt, category, readTime, image, slug = "#" }: ArticleCardProps) => {
   return (
-    <Link to={`/article/${slug}`}>
-      <motion.article
-        variants={cardHover}
-        initial="rest"
-        whileHover="hover"
-        className="group h-full overflow-hidden rounded-2xl bg-card border border-border/50 transition-colors"
+    <Link href={`/article/${slug}`} className="group block h-full">
+      <motion.article 
+        whileHover={{ y: -4 }}
+        className="flex h-full flex-col overflow-hidden rounded-2xl border border-border/50 bg-card transition-all duration-300 hover:border-primary/40 hover:shadow-lg"
       >
-        {/* Image */}
-        <div className="aspect-[16/10] overflow-hidden relative">
+        <div className="relative aspect-[16/10] overflow-hidden">
           <motion.img
-            variants={imageZoom}
+            initial={false}
+            animate={{ scale: 1 }}
+            whileHover={{ scale: 1.05 }}
+            transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
             src={image}
             alt={title}
             className="h-full w-full object-cover"
             loading="lazy"
           />
-          {/* Category badge overlay */}
-          <div className="absolute top-4 left-4">
-            <span className="pill-badge bg-background/90 backdrop-blur-md text-xs font-semibold">
-              {category}
-            </span>
+          <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+          <div className="absolute left-4 top-4 rounded-full bg-background/90 px-2.5 py-1 text-[10px] font-semibold tracking-wider text-foreground backdrop-blur-sm shadow-sm">
+            {category}
           </div>
-          {/* Arrow icon on hover */}
-          <motion.div
-            className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-            initial={{ scale: 0.8 }}
-            whileHover={{ scale: 1.1 }}
-          >
-            <div className="w-9 h-9 rounded-full bg-primary flex items-center justify-center">
-              <ArrowUpRight className="h-4 w-4 text-primary-foreground" />
+          <div className="absolute bottom-4 right-4 translate-y-4 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-md">
+              <ArrowUpRight className="h-4 w-4" />
             </div>
-          </motion.div>
-        </div>
-
-        {/* Content */}
-        <div className="p-5 space-y-3">
-          <div className="flex items-center gap-2 text-xs text-muted-foreground font-medium">
-            <Clock className="h-3 w-3" />
-            <span>{readTime}</span>
           </div>
-          <h3 className="font-serif text-xl font-bold leading-snug text-foreground group-hover:text-primary transition-colors duration-300 line-clamp-2">
+        </div>
+        
+        <div className="flex flex-1 flex-col p-5">
+          <div className="mb-2 flex items-center text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
+            {readTime}
+          </div>
+          <h3 className="mb-2 font-serif text-lg font-bold text-foreground leading-snug group-hover:text-primary transition-colors line-clamp-2">
             {title}
           </h3>
-          <p className="text-sm text-muted-foreground leading-relaxed line-clamp-2">
+          <p className="mt-auto text-sm text-muted-foreground leading-relaxed line-clamp-2">
             {excerpt}
           </p>
-          <div className="pt-2 flex items-center gap-2 text-sm font-medium text-primary opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-1 group-hover:translate-y-0">
-            Read Article
-            <ArrowUpRight className="h-3.5 w-3.5" />
-          </div>
         </div>
       </motion.article>
     </Link>

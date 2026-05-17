@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import { Hash } from "lucide-react";
 import { motion } from "framer-motion";
 import { useTrendingTopics } from "@/hooks/use-data";
@@ -23,7 +23,7 @@ const TrendingTopics = () => {
         {topics.map((topic) => (
           <motion.div key={topic.id} variants={staggerItem}>
             <Link
-              to={`/search?q=${topic.slug}`}
+              href={`/search?q=${topic.slug}`}
               className="inline-flex items-center gap-1 rounded-full bg-secondary/50 px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-primary/10 hover:text-primary"
             >
               <Hash className="h-3 w-3" />

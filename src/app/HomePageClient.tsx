@@ -1,20 +1,18 @@
-import { ArrowRight, ArrowLeft, ChevronRight, CheckCircle } from "lucide-react";
+"use client";
+
+import { ArrowRight, ArrowLeft, CheckCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ArticleCard from "@/components/ArticleCard";
 import NewsletterBox from "@/components/NewsletterBox";
-import { useFeaturedArticles, useCategories } from "@/hooks/use-data";
-import { Link } from "react-router-dom";
+import Link from "next/link";
 import {
   fadeInUp, heroTitle, heroSubtitle, heroCTA, heroImage, heroStat,
   staggerContainer, staggerItem, scrollViewport, staggerContainerSlow
 } from "@/lib/animations";
 
-const Index = () => {
-  const { data: articles = [], isLoading: loadingArticles } = useFeaturedArticles(6);
-  const { data: categories = [] } = useCategories();
-
+export default function HomePageClient({ articles, categories }: { articles: any[], categories: any[] }) {
   const pillTags = [
     { icon: CheckCircle, label: "Intentional Movement" },
     { icon: CheckCircle, label: "Purposeful Breathing" },
@@ -24,9 +22,9 @@ const Index = () => {
 
   return (
     <div className="flex min-h-screen flex-col">
-      <Header />
+      <Header categories={categories} />
       <main className="flex-1">
-        {/* ══════ HERO ══════ */}
+        {/* HERO */}
         <section className="relative overflow-hidden bg-hero-gradient min-h-[80vh] flex items-center">
           <div className="absolute top-2 left-0 right-0 text-center pointer-events-none select-none overflow-hidden">
             <motion.span initial={{ opacity: 0, y: -30 }} animate={{ opacity: 0.05, y: 0 }} transition={{ duration: 1.2, delay: 0.3 }}
@@ -46,13 +44,13 @@ const Index = () => {
                   Discover how every breath and movement can guide you toward harmony, strength, and mindfulness.
                 </motion.p>
                 <motion.div variants={heroCTA} initial="hidden" animate="visible" className="flex flex-wrap gap-3">
-                  <Link to="/newsletter">
+                  <Link href="/newsletter">
                     <motion.span whileHover={{ scale: 1.03, y: -1 }} whileTap={{ scale: 0.97 }}
-                      className="btn-premium btn-premium-filled text-xs px-5 py-2.5">Enroll Now</motion.span>
+                      className="btn-premium btn-premium-filled text-xs px-5 py-2.5 inline-block">Enroll Now</motion.span>
                   </Link>
-                  <Link to="/contact">
+                  <Link href="/contact">
                     <motion.span whileHover={{ scale: 1.03, y: -1 }} whileTap={{ scale: 0.97 }}
-                      className="btn-premium btn-premium-outline border-forest-800/20 text-forest-900 text-xs px-5 py-2.5">Contact Us</motion.span>
+                      className="btn-premium btn-premium-outline border-forest-800/20 text-forest-900 text-xs px-5 py-2.5 inline-block">Contact Us</motion.span>
                   </Link>
                 </motion.div>
               </div>
@@ -90,7 +88,7 @@ const Index = () => {
           </div>
         </section>
 
-        {/* ══════ CATEGORIES (from DB) ══════ */}
+        {/* CATEGORIES */}
         {categories.length > 0 && (
           <section className="py-14 bg-background">
             <div className="container mx-auto px-4">
@@ -112,9 +110,9 @@ const Index = () => {
                 className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                 {categories.map((cat) => (
                   <motion.div key={cat.id} variants={staggerItem}>
-                    <Link to={`/category/${cat.slug}`}>
+                    <Link href={`/category/${cat.slug}`}>
                       <motion.div whileHover={{ y: -4, scale: 1.02 }} whileTap={{ scale: 0.98 }}
-                        className="group rounded-xl border border-border/50 bg-card p-6 transition-all hover:border-primary/30 hover:shadow-md">
+                        className="group rounded-xl border border-border/50 bg-card p-6 transition-all hover:border-primary/30 hover:shadow-md h-full">
                         <h3 className="font-serif text-base font-bold text-foreground mb-1.5">{cat.name}</h3>
                         <p className="text-xs text-muted-foreground leading-relaxed line-clamp-2">{cat.description || `Explore ${cat.name} articles`}</p>
                         <div className="mt-3 flex items-center gap-1.5 text-xs font-medium text-primary opacity-0 group-hover:opacity-100 transition-all">
@@ -129,7 +127,7 @@ const Index = () => {
           </section>
         )}
 
-        {/* ══════ FEATURED ARTICLES (from DB) ══════ */}
+        {/* FEATURED ARTICLES */}
         <section className="py-14 bg-sage-100/30">
           <div className="container mx-auto px-4">
             <motion.div variants={fadeInUp} initial="hidden" whileInView="visible" viewport={scrollViewport}
@@ -139,13 +137,8 @@ const Index = () => {
                 <h2 className="text-display text-2xl md:text-3xl text-foreground">Featured Articles</h2>
               </div>
             </motion.div>
-            {loadingArticles ? (
-              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {[1, 2, 3].map((i) => (
-                  <div key={i} className="h-72 animate-shimmer rounded-xl" />
-                ))}
-              </div>
-            ) : articles.length === 0 ? (
+            
+            {articles.length === 0 ? (
               <p className="text-center text-muted-foreground text-sm py-12">No articles published yet. Check back soon!</p>
             ) : (
               <motion.div variants={staggerContainerSlow} initial="hidden" whileInView="visible" viewport={scrollViewport}
@@ -167,16 +160,14 @@ const Index = () => {
           </div>
         </section>
 
-        {/* ══════ NEWSLETTER ══════ */}
+        {/* NEWSLETTER */}
         <section className="py-14 bg-background">
           <div className="container mx-auto px-4">
             <NewsletterBox />
           </div>
         </section>
       </main>
-      <Footer />
+      <Footer categories={categories} />
     </div>
   );
-};
-
-export default Index;
+}

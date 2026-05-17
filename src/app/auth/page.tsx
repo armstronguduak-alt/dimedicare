@@ -1,5 +1,7 @@
+"use client";
+
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useRouter } from "next/navigation";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -8,23 +10,24 @@ import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 import { scaleIn } from "@/lib/animations";
 import { Mail, Lock, ArrowRight, Leaf } from "lucide-react";
+import Image from "next/image";
 import logo from "@/assets/logo.png";
 import Header from "@/components/Header";
 
-const Auth = () => {
+export default function AuthPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
+  const router = useRouter();
   const { toast } = useToast();
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) {
-        navigate("/");
+        router.push("/");
       }
     });
-  }, [navigate]);
+  }, [router]);
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -52,7 +55,7 @@ const Auth = () => {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } else {
       toast({ title: "Welcome back!", description: "You have successfully signed in." });
-      navigate("/");
+      router.push("/");
     }
     setLoading(false);
   };
@@ -69,10 +72,12 @@ const Auth = () => {
           className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-hero-gradient"
         >
           <div className="absolute inset-0">
-            <img
+            <Image
               src="https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=1200&h=1600&fit=crop"
               alt="Wellness"
-              className="h-full w-full object-cover opacity-30 mix-blend-overlay"
+              fill
+              className="object-cover opacity-30 mix-blend-overlay"
+              priority
             />
           </div>
           <div className="relative z-10 flex flex-col justify-between p-12 w-full">
@@ -107,9 +112,10 @@ const Auth = () => {
           className="flex w-full lg:w-1/2 items-center justify-center px-6 py-12"
         >
           <div className="w-full max-w-sm">
-            {/* Mobile logo */}
             <div className="lg:hidden mb-8 text-center">
-              <img src={logo} alt="Dimedicare" className="mx-auto h-8 w-auto mb-4" />
+              <div className="relative h-8 w-32 mx-auto mb-4">
+                <Image src={logo} alt="Dimedicare" fill className="object-contain" />
+              </div>
             </div>
 
             <motion.div variants={scaleIn} initial="hidden" animate="visible">
@@ -225,6 +231,4 @@ const Auth = () => {
       </div>
     </div>
   );
-};
-
-export default Auth;
+}

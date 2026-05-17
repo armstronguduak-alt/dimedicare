@@ -1,45 +1,32 @@
+"use client";
+
 import { useState, useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useRouter, useSearchParams } from "next/navigation";
 import { supabase } from "@/integrations/supabase/client";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import SearchBar from "@/components/SearchBar";
 import ArticleCard from "@/components/ArticleCard";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import SEOHead from "@/components/SEOHead";
 import { motion } from "framer-motion";
 import { fadeInUp, staggerContainerSlow, staggerItem, scrollViewport } from "@/lib/animations";
 import { Search as SearchIcon } from "lucide-react";
 
-interface Article {
-  id: string;
-  title: string;
-  slug: string;
-  excerpt: string;
-  featured_image: string;
-  read_time: number;
-  categories: { name: string } | null;
-}
-
-interface Category {
-  id: string;
-  name: string;
-}
-
-const Search = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const [articles, setArticles] = useState<Article[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
+export default function SearchPage() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const query = searchParams.get("q") || "";
+  
+  const [articles, setArticles] = useState<any[]>([]);
+  const [categories, setCategories] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
-
-  const query = searchParams.get("q") || "";
 
   useEffect(() => { fetchCategories(); }, []);
   useEffect(() => { searchArticles(); }, [query, selectedCategory]);
 
   const fetchCategories = async () => {
-    const { data, error } = await supabase.from("categories").select("id, name");
+    const { data, error } = await supabase.from("categories").select("id, name, slug");
     if (!error && data) setCategories(data);
   };
 
@@ -63,18 +50,13 @@ const Search = () => {
   };
 
   const handleSearch = (newQuery: string) => {
-    if (newQuery) setSearchParams({ q: newQuery });
-    else setSearchParams({});
+    if (newQuery) router.push(`/search?q=${encodeURIComponent(newQuery)}`);
+    else router.push(`/search`);
   };
 
   return (
     <div className="flex min-h-screen flex-col">
-      <SEOHead
-        title={query ? `Search Results: ${query} | Dimedicare` : "Search Articles | Dimedicare"}
-        description="Search for health, fitness, nutrition, and wellness articles"
-        url={`https://dimedicare.com/search${query ? `?q=${query}` : ""}`}
-      />
-      <Header />
+      <Header categories={categories} />
       <main className="flex-1">
         <motion.section initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.6 }} className="relative overflow-hidden bg-gradient-to-br from-primary via-forest-700 to-forest-900 py-20 text-primary-foreground">
           <div className="absolute top-0 right-0 w-96 h-96 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/3 blur-3xl" />
@@ -99,7 +81,7 @@ const Search = () => {
             </p>
             <div className="w-48">
               <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                <SelectTrigger className="rounded-xl border-border/60">
+                <SelectTrigger className="rounded-xl border-border/60 text-sm">
                   <SelectValue placeholder="Filter by category" />
                 </SelectTrigger>
                 <SelectContent>
@@ -115,7 +97,7 @@ const Search = () => {
           {loading ? (
             <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
               {[...Array(6)].map((_, i) => (
-                <div key={i} className="h-96 animate-shimmer rounded-2xl" />
+                <div key={i} className="h-96 animate-shimmer rounded-2xl bg-secondary/30" />
               ))}
             </div>
           ) : articles.length === 0 ? (
@@ -124,7 +106,7 @@ const Search = () => {
                 <SearchIcon className="h-7 w-7 text-muted-foreground" />
               </div>
               <p className="font-serif text-xl font-bold text-foreground mb-2">No articles found</p>
-              <p className="text-muted-foreground">Try a different search term or browse our categories.</p>
+              <p className="text-muted-foreground text-sm">Try a different search term or browse our categories.</p>
             </motion.div>
           ) : (
             <motion.div variants={staggerContainerSlow} initial="hidden" whileInView="visible" viewport={scrollViewport} className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
@@ -134,7 +116,7 @@ const Search = () => {
                     title={article.title}
                     excerpt={article.excerpt || ""}
                     category={article.categories?.name || "Uncategorized"}
-                    readTime={`${article.read_time} min read`}
+                    readTime={`${article.read_time || 5} min read`}
                     image={article.featured_image || "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&h=450&fit=crop"}
                     slug={article.slug}
                   />
@@ -144,9 +126,7 @@ const Search = () => {
           )}
         </div>
       </main>
-      <Footer />
+      <Footer categories={categories} />
     </div>
   );
-};
-
-export default Search;
+}
