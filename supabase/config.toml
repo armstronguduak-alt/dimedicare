@@ -1,0 +1,10 @@
+project_id = "vksrhtlmfmmuxikvdrda"
+
+[functions.generate-article]
+verify_jwt = true
+
+[functions.generate-image]
+verify_jwt = true
+
+[functions.populate-sample-articles]
+verify_jwt = true
